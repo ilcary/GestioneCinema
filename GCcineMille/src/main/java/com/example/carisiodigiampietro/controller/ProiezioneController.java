@@ -1,11 +1,18 @@
 package com.example.carisiodigiampietro.controller;
 
+import com.example.carisiodigiampietro.entity.Film;
 import com.example.carisiodigiampietro.entity.Proiezione;
+import com.example.carisiodigiampietro.entity.Sala;
+import com.example.carisiodigiampietro.services.FilmService;
 import com.example.carisiodigiampietro.services.ProiezioneService;
+import com.example.carisiodigiampietro.services.SalaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -17,15 +24,29 @@ public class ProiezioneController {
     @Autowired
     private ProiezioneService proiezioneService;
 
+    @Autowired
+    private FilmService filmService;
+
+    @Autowired
+    private SalaService salaService;
+
     @PostMapping
     public Proiezione saveProiezione(
-//          TODO gestire il post
-//            @Valid
-//            @RequestParam("name") String name,
-//            @RequestParam(value="address",required=false) String address,
+    @RequestParam("filmId") Long filmId,
+    @RequestParam("salaId") Long salaId,
+    @RequestParam("data") String data
     ) {
-        Proiezione proiezione = Proiezione.proiezioneBuilder().build();
+        Film film = filmService.getById(filmId);
+        Sala sala = salaService.getById(salaId);
 
+        Proiezione proiezione = Proiezione.proiezioneBuilder()
+                .dataProiezione(stringToDate(data))
+                .anno(film.getAnno())
+                .name(film.getNome())
+                .regista(film.getRegista())
+                .sala(sala)
+                .build();
+        System.out.println("POPI POPI"+stringToDate(data));
         logger.info("Save Proiezione in ProiezioneController");
         return proiezioneService.save(proiezione);
     }
@@ -48,16 +69,31 @@ public class ProiezioneController {
 
     @PutMapping("/{id}")
     public Proiezione updateProiezione(
-            @PathVariable("id") Long id
-//            @RequestParam("name") String name
+            @PathVariable("id") Long id,
+            @RequestBody Proiezione updateProiezione
     ) {
 
         Proiezione proiezione = proiezioneService.getById(id);
 
-        //TODO gestire il put
+        if(updateProiezione.getDataProiezione() != null)
+            proiezione.setDataProiezione(updateProiezione.getDataProiezione());
+        if(updateProiezione.getNome()!=null)
+            proiezione.setNome(updateProiezione.getNome());
+        if(updateProiezione.getAnno()!=null)
+            proiezione.setAnno(updateProiezione.getAnno());
+        if(updateProiezione.getRegista()!=null)
+            proiezione.setRegista(updateProiezione.getRegista());
 
         proiezioneService.save(proiezione);
         return proiezione;
     }
+
+    private LocalDateTime stringToDate(String data){
+        //metodo per convertire string in LocalDateTime
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        return LocalDateTime.parse(data, formatter);
+    }
+
+    //TODO metodo per aggiungere in programmazione film
 
 }
