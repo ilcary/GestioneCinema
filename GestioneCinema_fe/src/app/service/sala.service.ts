@@ -19,6 +19,10 @@ export class SalaService {
     return this.http.get<Sala[]>(apiUrl+"/sala");
   }
 
+  getallSalaByCinemaId(cinemaId: number):Observable<Sala[]>{
+    return this.http.get<Sala[]>(apiUrl+"/sala/allSalaByCinemaId/"+cinemaId);
+  }
+
   saveSala(posti:number, tecnologiaIMAX:boolean, cinemaId:number):Observable<Sala>{
     return this.http.post<Sala>(apiUrl+"/sala?tecnologiaIMAX="+tecnologiaIMAX+"&posti="+posti+"&cinemaId"+cinemaId, {})
   }

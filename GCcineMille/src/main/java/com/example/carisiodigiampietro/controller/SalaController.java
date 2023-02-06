@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/sala")
@@ -49,9 +50,13 @@ public class SalaController {
         return sala;
     }
 
-    @GetMapping
-    public List<Sala> getSalaList() {
-        return salaService.getAll();
+    @GetMapping("allSalaByCinemaId/{id}")
+    public List<Sala> getAllSalaByCinemaId(@PathVariable("id") Long id) {
+        if(salaService.getAllByCinemaId(id).size() != 0){
+            return salaService.getAllByCinemaId(id);
+        }
+        logger.error("Non sono state trovate sale per il cinemaId fornito");
+        return null;
     }
 
     @GetMapping("{id}")

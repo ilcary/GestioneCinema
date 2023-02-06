@@ -2,21 +2,71 @@
   <div class="container">
     <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
       <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
-        <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap"><use xlink:href="#bootstrap"></use></svg>
+        <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap">
+          <use xlink:href="#bootstrap"></use>
+        </svg>
       </a>
 
       <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
         <li><a href="#" disabled class="nav-link px-2 text-white disabled">Gestione Cinema 🍿</a></li>
-        <li><a href="#" class="nav-link px-2 text-white">Home</a></li>
-        <li><a href="#" class="nav-link px-2 text-white">Pricing</a></li>
+        <li><a href="#" class="nav-link px-2 text-white" (click)="setHome()">Home</a></li>
       </ul>
 
     </div>
   </div>
 </header>
 
+<div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+
+  <main>
+
+
+    <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
+      <h1 class="display-4 fw-normal">{{visibleCinemas? "Gestione Cinema 🍿":nomeCinema}}</h1>
+      <p class="fs-5 text-muted">{{visibleCinemas? "Scegli uno tra i seguenti cinema!":"Scegli una tra le seguenti sale!"}}</p>
+    </div>
+
+    <div *ngIf="visibleCinemas" class="row row-cols-1 row-cols-md-3 mb-3 text-center">
+      <div *ngFor="let cinema of cinemaList" class="col">
+        <div class="card mb-4 rounded-3 text-dark shadow-sm">
+          <div class="card-header py-3">
+            <h4 class="my-0 fw-normal">{{cinema.name}}</h4>
+          </div>
+          <div class="card-body">
+            <ul class="list-unstyled mt-3 mb-4">
+              <li>Sale: {{cinema.sale.length}}</li>
+            </ul>
+            <button type="button" class="w-100 btn btn-lg btn-outline-primary" (click)="seeSaleOfCinema(cinema)">Accedi</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="!visibleCinemas" class="row row-cols-1 row-cols-md-3 mb-3 text-center">
+      <div *ngFor="let sala of salaList" class="col">
+        <div class="card mb-4 rounded-3 text-dark shadow-sm">
+          <div class="card-header py-3">
+            <h4 class="my-0 fw-normal">Sala n. {{sala.id}}</h4>
+          </div>
+          <div class="card-body">
+            <ul class="list-unstyled mt-3 mb-4">
+              <li>Posti: {{sala.posti}}</li>
+              <li>Tecnologia IMAX:{{sala.tecnologiaIMAX? "Si":"No"}}</li>
+            </ul>
+            <button type="button" class="w-100 btn p-1 m-1 btn-lg btn-outline-primary">Vedi film in programmazione</button>
+            <button type="button" class="w-100 btn p-1 m-1 btn-lg btn-outline-success">Aggiungi film in programmazione</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
 
 
+  </main>
+</div>
 
 
+
+<footer class="mt-auto text-white-50 fixed-bottom text-center p-2 text-bg-dark">
+  <p>IlCary</p>
+</footer>

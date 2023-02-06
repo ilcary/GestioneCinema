@@ -1,7 +1,9 @@
+import { Film } from "./Film";
 import { Sala } from "./Sala";
 
 export interface Cinema{
   id?:number;
-  nome:string;
+  name:string;
   sale:Sala[];
+  catalogoFilm:Film[];
 }
