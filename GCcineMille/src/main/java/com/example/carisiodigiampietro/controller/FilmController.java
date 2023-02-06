@@ -27,6 +27,7 @@ public class FilmController {
             @RequestParam("name") String nome,
             @RequestParam("regista") String regista,
             @RequestParam("anno") Integer anno,
+            @RequestParam("minDurata") Integer minDurata,
             @RequestParam("cinemaId") Long id
     ) {
 
@@ -36,6 +37,7 @@ public class FilmController {
                 .nome(nome)
                 .regista(regista)
                 .anno(anno)
+                .minDurata(minDurata)
                 .build();
 
         filmService.save(film);

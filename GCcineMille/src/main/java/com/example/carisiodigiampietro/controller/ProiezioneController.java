@@ -41,12 +41,13 @@ public class ProiezioneController {
 
         Proiezione proiezione = Proiezione.proiezioneBuilder()
                 .dataProiezione(stringToDate(data))
+                .minDurata(film.getMinDurata())
                 .anno(film.getAnno())
                 .name(film.getNome())
                 .regista(film.getRegista())
                 .sala(sala)
                 .build();
-        System.out.println("POPI POPI"+stringToDate(data));
+        logger.info("data formatter work "+stringToDate(data));
         logger.info("Save Proiezione in ProiezioneController");
         return proiezioneService.save(proiezione);
     }
@@ -77,6 +78,8 @@ public class ProiezioneController {
 
         if(updateProiezione.getDataProiezione() != null)
             proiezione.setDataProiezione(updateProiezione.getDataProiezione());
+        if(updateProiezione.getDataFineProiezione() != null)
+            proiezione.setDataFineProiezione(updateProiezione.getDataFineProiezione());
         if(updateProiezione.getNome()!=null)
             proiezione.setNome(updateProiezione.getNome());
         if(updateProiezione.getAnno()!=null)

@@ -15,10 +15,11 @@ import javax.persistence.*;
 public class Film {
 
     @Builder(builderMethodName = "filmBuilder")
-    public Film(String nome,String regista, int anno) {
+    public Film(String nome,String regista, int anno, Integer minDurata) {
         this.nome = nome;
         this.regista = regista;
         this.anno = anno;
+        this.minDurata = minDurata;
     }
 
     @Id
@@ -30,4 +31,6 @@ public class Film {
     private String regista;
 
     private Integer anno;
+
+    private Integer minDurata;
 }

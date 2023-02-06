@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -83,6 +84,51 @@ public class CinemaController {
 
     //TODO permettere di cercare tramite data di inizio e di fine della proiezione
 
+    @GetMapping("/byDataInizio/{id}")
+    public List<Proiezione> getProiezioniByDataInizio(
+            @PathVariable("id") Long id,
+            @RequestParam("dataInizio") String dataInizio
+    ){
+        Cinema cinema = cinemaService.getById(id);
+        List<Proiezione> proiezioniPassate = new ArrayList<Proiezione>();
+        Set<Sala> saleCinema = cinema.getSale();
+
+        for(Sala s : saleCinema){
+            List<Proiezione> listP = s.getInProgrammazione();
+
+            for (Proiezione proiezione : listP){
+                if(proiezione.getDataProiezione().isEqual(stringToDate(dataInizio)))
+                    proiezioniPassate.add(proiezione);
+            }
+
+        }
+
+        return proiezioniPassate;
+    }
+
+    @GetMapping("/byDataFine/{id}")
+    public List<Proiezione> getProiezioniByDataFine(
+            @PathVariable("id") Long id,
+            @RequestParam("dataFine") String dataFine
+    ){
+        Cinema cinema = cinemaService.getById(id);
+        List<Proiezione> proiezioniPassate = new ArrayList<Proiezione>();
+        Set<Sala> saleCinema = cinema.getSale();
+
+        for(Sala s : saleCinema){
+            List<Proiezione> listP = s.getInProgrammazione();
+
+            for (Proiezione proiezione : listP){
+                if(proiezione.getDataFineProiezione().isEqual(stringToDate(dataFine)))
+                    proiezioniPassate.add(proiezione);
+            }
+
+        }
+
+        return proiezioniPassate;
+    }
+
+
     @DeleteMapping("{id}")
     public String deleteCinemaById(@PathVariable("id") Long id) {
         String nomeCinema = cinemaService.getById(id).getName();
@@ -104,6 +150,12 @@ public class CinemaController {
 
         cinemaService.save(cinema);
         return cinema;
+    }
+
+    private LocalDateTime stringToDate(String data){
+        //metodo per convertire string in LocalDateTime
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        return LocalDateTime.parse(data, formatter);
     }
 
 }
