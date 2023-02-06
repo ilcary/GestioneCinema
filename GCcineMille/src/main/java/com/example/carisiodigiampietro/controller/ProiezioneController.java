@@ -17,6 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/proiezioni")
+@CrossOrigin("http://localhost:4200")
 public class ProiezioneController {
 
     private final Logger logger = LoggerFactory.getLogger(ProiezioneController.class);

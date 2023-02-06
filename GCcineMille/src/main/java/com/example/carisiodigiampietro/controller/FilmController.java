@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/film")
+@CrossOrigin("http://localhost:4200")
 public class FilmController {
 
     private final Logger logger = LoggerFactory.getLogger(FilmController.class);

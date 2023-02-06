@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/sala")
+@CrossOrigin("http://localhost:4200")
 public class SalaController {
 
     private final Logger logger = LoggerFactory.getLogger(SalaController.class);

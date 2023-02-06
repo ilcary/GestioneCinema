@@ -17,6 +17,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/api/cinema")
+@CrossOrigin("http://localhost:4200")
 public class CinemaController {
 
     private final Logger logger = LoggerFactory.getLogger(CinemaController.class);
@@ -82,7 +83,6 @@ public class CinemaController {
         return proiezioniPassate;
     }
 
-    //TODO permettere di cercare tramite data di inizio e di fine della proiezione
 
     @GetMapping("/byDataInizio/{id}")
     public List<Proiezione> getProiezioniByDataInizio(
