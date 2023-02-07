@@ -19,6 +19,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 export class AppComponent implements OnInit {
 
   dataProiezione!: string;
+  dataInizioFine!: string;
   cinemaAttuale!: Cinema;
   salaAttuale!: Sala;
   visibleCinemas: boolean = true;
@@ -39,16 +40,16 @@ export class AppComponent implements OnInit {
     private salaService: SalaService,
     private proiezioneService: ProiezioneService,
     private filmService: FilmService
-    ) { }
+  ) { }
 
   ngOnInit(): void {
     this.getCinemas();
     this.form = new FormGroup({
-      nome: new FormControl(null,[Validators.required]),
-      regista: new FormControl(null,[Validators.required]),
-      anno: new FormControl(null,[Validators.required]),
-      durata: new FormControl(null,[Validators.required])
-  })
+      nome: new FormControl(null, [Validators.required]),
+      regista: new FormControl(null, [Validators.required]),
+      anno: new FormControl(null, [Validators.required]),
+      durata: new FormControl(null, [Validators.required])
+    })
   }
 
   //HOME CARD CINEMA
@@ -157,49 +158,49 @@ export class AppComponent implements OnInit {
 
   }
 
-  deleteFilmFromCatalogo(film:Film):void{
-    if (film.id){
+  deleteFilmFromCatalogo(film: Film): void {
+    if (film.id) {
       this.filmService.deleteFilmById(film.id)
-      .subscribe({
-        next: (res) => {
-          console.log(res);
-          this.cinemaAttuale.catalogoFilm.splice(this.cinemaAttuale.catalogoFilm.indexOf(res),1);
-          Swal.fire(
-            'Film rimosso dal catalogo :(',
-            'Il film: "' + res.nome + '" è stato correttamente eliminato',
-            'success'
-          )
-        },
-        error: (error: HttpErrorResponse) => {
-          console.log(error);
-        }
-      })
-    }else{
+        .subscribe({
+          next: (res) => {
+            console.log(res);
+            this.cinemaAttuale.catalogoFilm.splice(this.cinemaAttuale.catalogoFilm.indexOf(res), 1);
+            Swal.fire(
+              'Film rimosso dal catalogo :(',
+              'Il film: "' + res.nome + '" è stato correttamente eliminato',
+              'success'
+            )
+          },
+          error: (error: HttpErrorResponse) => {
+            console.log(error);
+          }
+        })
+    } else {
       console.log("L'id del film è undefined");
 
     }
 
   }
 
-  addFilmToCatalogo():void{
-    if(this.cinemaAttuale.id){
+  addFilmToCatalogo(): void {
+    if (this.cinemaAttuale.id) {
       this.filmService.saveFilm(this.form.value.nome, this.form.value.regista, this.form.value.anno, this.cinemaAttuale.id, this.form.value.durata)
-      .subscribe({
-        next: (res) => {
-          console.log(res);
-          this.cinemaAttuale.catalogoFilm.push(res);
-          Swal.fire(
-            'Film aggiunto al catalogo!',
-            'Il film: "' + res.nome + '" è stato correttamente aggiunto al catalogo del cinema: ' + this.cinemaAttuale.name,
-            'success'
-          )
-          this.form.reset();
-        },
-        error: (error: HttpErrorResponse) => {
-          console.log(error);
-        }
-      })
-    }else{
+        .subscribe({
+          next: (res) => {
+            console.log(res);
+            this.cinemaAttuale.catalogoFilm.push(res);
+            Swal.fire(
+              'Film aggiunto al catalogo!',
+              'Il film: "' + res.nome + '" è stato correttamente aggiunto al catalogo del cinema: ' + this.cinemaAttuale.name,
+              'success'
+            )
+            this.form.reset();
+          },
+          error: (error: HttpErrorResponse) => {
+            console.log(error);
+          }
+        })
+    } else {
       console.log("L'id del cinema è undefined");
 
     }
@@ -213,75 +214,79 @@ export class AppComponent implements OnInit {
     this.nomeCinema = cinema.name;
     this.visibleCinemas = !this.visibleCinemas;
     this.visibleProiezioniCinema = !this.visibleProiezioniCinema;
-    if(cinema.id){
+    this.getFutureProiezioni(cinema)
 
+
+  }
+
+  getFutureProiezioni(cinema: Cinema) {
+    if (cinema.id) {
       this.cinemaService.getFutureProiezioni(cinema.id)
-      .subscribe({
-        next: (res) => {
-          console.log(res);
-          this.proiezioni=res;
-        },
-        error: (error: HttpErrorResponse) => {
-          console.log(error);
-        }
-      })
-    }else{
-      console.log("");
-
+        .subscribe({
+          next: (res) => {
+            console.log(res);
+            this.proiezioni = res;
+          },
+          error: (error: HttpErrorResponse) => {
+            console.log(error);
+          }
+        })
+    } else {
+      console.log("L'id del cinema è undefined");
     }
 
   }
 
-  getProiezioniPassate(cinema: Cinema):void{
-    if(cinema.id){
-    this.cinemaService.getFutureProiezioni(cinema.id)
-    .subscribe({
-      next: (res) => {
-        console.log(res);
-        this.proiezioni=res;
-      },
-      error: (error: HttpErrorResponse) => {
-        console.log(error);
-      }
-    })
-  }else{
-    console.log("");
-
-  }
-  }
-
-  getProiezioniByDataInizio(cinema: Cinema,dataInizio:string):void{
-    if(cinema.id){
-      this.cinemaService.getProiezioniByDataInizio(cinema.id,dataInizio)
-      .subscribe({
-        next: (res) => {
-          console.log(res);
-          this.proiezioni=res;
-        },
-        error: (error: HttpErrorResponse) => {
-          console.log(error);
-        }
-      })
-    }else{
-      console.log("");
+  getProiezioniPassate(cinema: Cinema): void {
+    if (cinema.id) {
+      this.cinemaService.getFutureProiezioni(cinema.id)
+        .subscribe({
+          next: (res) => {
+            console.log(res);
+            this.proiezioni = res;
+          },
+          error: (error: HttpErrorResponse) => {
+            console.log(error);
+          }
+        })
+    } else {
+      console.log("L'id del cinema è undefined");
 
     }
   }
 
-  getProiezioniByDataFine(cinema: Cinema, dataFine:string):void{
-    if(cinema.id){
-      this.cinemaService.getProiezioniByDataFine(cinema.id,dataFine)
-      .subscribe({
-        next: (res) => {
-          console.log(res);
-          this.proiezioni=res;
-        },
-        error: (error: HttpErrorResponse) => {
-          console.log(error);
-        }
-      })
-    }else{
-      console.log("");
+  getProiezioniByDataInizio(cinema: Cinema, dataInizio: string): void {
+    if (cinema.id) {
+      this.cinemaService.getProiezioniByDataInizio(cinema.id, dataInizio)
+        .subscribe({
+          next: (res) => {
+            console.log(res);
+            this.proiezioni = res;
+          },
+          error: (error: HttpErrorResponse) => {
+            console.log(error);
+          }
+        })
+    } else {
+      console.log("L'id del cinema è undefined");
+
+    }
+  }
+
+  getProiezioniByDataFine(cinema: Cinema, dataFine: string): void {
+    if (cinema.id) {
+      this.cinemaService.getProiezioniByDataFine(cinema.id, dataFine)
+        .subscribe({
+          next: (res) => {
+            console.log(res);
+            this.proiezioni = res;
+          },
+          error: (error: HttpErrorResponse) => {
+            console.log(error);
+          }
+        })
+    } else {
+      console.log("L'id del cinema è undefined");
 
     }
   }
