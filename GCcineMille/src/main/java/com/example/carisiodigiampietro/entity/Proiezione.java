@@ -23,11 +23,14 @@ public class Proiezione extends Film{
         this.dataProiezione = dataProiezione;
         this.dataFineProiezione = dataProiezione.plusMinutes(minDurata);
         this.sala = sala;
+        this.salaNum=sala.getId();
     }
 
     private LocalDateTime dataProiezione;
 
     private LocalDateTime dataFineProiezione;
+
+    private Long salaNum;
 
     @ManyToOne
     @JoinColumn(name = "sala_id")

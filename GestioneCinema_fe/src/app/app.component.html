@@ -11,6 +11,10 @@
         <li><a href="#" disabled class="nav-link px-2 text-white disabled">Gestione Cinema 🍿</a></li>
         <li><a href="#" class="nav-link px-2 text-white" (click)="setHome()">Home</a></li>
       </ul>
+       <!-- bottone per aumentare la ux che ci da la possibilità di tornare indietro di uno step e non solo alla home con il navlink -->
+      <button *ngIf="visibleProiezioni" type="button" class="btn btn-danger text-end" (click)="setProiezioni()">&#x2BC7;</button>
+      <button *ngIf="visibleAddFilm" type="button" class="btn btn-danger text-end" (click)="setSaleFromProgrammazione()">&#x2BC7;</button>
+      <button *ngIf="visibleCatalogoFilm" type="button" class="btn btn-danger text-end" (click)="setHome()">&#x2BC7;</button>
 
     </div>
   </div>
@@ -20,11 +24,17 @@
 
   <main>
 
+    <!-- SECTION PER STACCARE E INFO DI NAVIGAZIONE :) -->
 
     <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
       <h1 class="display-4 fw-normal">{{visibleCinemas? "Gestione Cinema 🍿":nomeCinema}}</h1>
-      <p class="fs-5 text-muted">{{visibleCinemas? "Scegli uno tra i seguenti cinema!":"Scegli una tra le seguenti sale!"}}</p>
+
+      <p class="fs-5 text-muted"><!-- ternary operator annidati, ci risparmiamo una funzione ed in base ai livelli di visibility scegliamo la descrizione adatta -->
+        {{visibleCinemas? "Scegli uno tra i seguenti cinema!" : visibleProiezioni ? "Quale film vedrai?": visibleAddFilm? "Scegli un film da aggiungiere alla programmazione della sala n. "+salaAttuale.id+" 🎥" : "Scegli una tra le seguenti sale!"}}
+      </p>
     </div>
+
+    <!-- CINEMA CARDS -->
 
     <div *ngIf="visibleCinemas" class="row row-cols-1 row-cols-md-3 mb-3 text-center">
       <div *ngFor="let cinema of cinemaList" class="col">
@@ -36,13 +46,78 @@
             <ul class="list-unstyled mt-3 mb-4">
               <li>Sale: {{cinema.sale.length}}</li>
             </ul>
-            <button type="button" class="w-100 btn btn-lg btn-outline-primary" (click)="seeSaleOfCinema(cinema)">Accedi</button>
+            <button type="button" class="w-100 p-1 m-1 btn btn-lg btn-outline-primary" (click)="seeCatalogoFilm(cinema)">Catalogo Film 🎞️</button>
+            <button type="button" class="w-100 p-1 m-1 btn btn-lg btn-outline-secondary" (click)="seeProiezioniCinema(cinema)">Proiezioni 🎥</button>
+            <button type="button" class="w-100 p-1 m-1 btn btn-lg btn-outline-success" (click)="seeSaleOfCinema(cinema)">Accedi 🏛️</button>
           </div>
         </div>
       </div>
     </div>
 
-    <div *ngIf="!visibleCinemas" class="row row-cols-1 row-cols-md-3 mb-3 text-center">
+      <!-- TABLE FILM CRUD CATALOGO -->
+
+      <table *ngIf="visibleCatalogoFilm" class="table">
+        <thead>
+          <tr>
+            <th scope="col">Film</th>
+            <th scope="col">Regista</th>
+            <th scope="col">Anno</th>
+            <th scope="col">Durata</th>
+            <th scope="col">Azione</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let film of cinemaAttuale.catalogoFilm">
+            <th scope="row">{{film.nome}}</th>
+            <td scope="row">{{film.regista}}</td>
+            <td scope="row">{{film.anno}}</td>
+            <td scope="row">{{film.minDurata}} min</td>
+            <td scope="row"><button type="button" class="btn btn-outline-danger p-1 text-end" (click)="deleteFilmFromCatalogo(film)" >Elimina</button></td>
+          </tr>
+          <tr  [formGroup]="form">
+            <th scope="row"><input formControlName="nome" type="text" class="form-control" placeholder="Nome" aria-label="Nome"></th>
+            <td scope="row"><input formControlName="regista" type="text" class="form-control" placeholder="Regista" aria-label="Regista"></td>
+            <td scope="row"><input formControlName="anno" type="number" class="form-control" placeholder="Anno" aria-label="Anno"></td>
+            <td scope="row"><input formControlName="durata" type="number" class="form-control" placeholder="Durata" aria-label="Durata in min"></td>
+            <td scope="row"><button type="button" class="btn btn-outline-success p-1 text-end" [disabled]="!form.valid" (click)="addFilmToCatalogo()" >Aggiungi</button></td>
+          </tr>
+
+        </tbody>
+      </table>
+
+       <!-- TABLE PROIEZIONI DEL CINEMA aggiungere metodi per il filtraggio delle proiezioni-->
+
+       <div *ngIf="visibleProiezioniCinema" >
+
+        <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Film</th>
+            <th scope="col">Regista</th>
+            <th scope="col">Anno</th>
+            <th scope="col">Durata</th>
+            <th scope="col">Inizio</th>
+            <th scope="col">Fine</th>
+            <th scope="col">Sala</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let proiezione of proiezioni">
+            <th scope="row">{{proiezione.nome}}</th>
+            <td scope="row">{{proiezione.regista}}</td>
+            <td scope="row">{{proiezione.anno}}</td>
+            <td scope="row">{{proiezione.minDurata}} min</td>
+            <td scope="row">{{proiezione.dataProiezione}}</td>
+            <td scope="row">{{proiezione.dataFineProiezione}}</td>
+            <td scope="row">{{proiezione.salaNum}}</td>
+          </tr>
+        </tbody>
+      </table>
+       </div>
+
+      <!-- SALA CARDS -->
+
+    <div *ngIf="visibleSalas" class="row row-cols-1 row-cols-md-3 mb-3 text-center">
       <div *ngFor="let sala of salaList" class="col">
         <div class="card mb-4 rounded-3 text-dark shadow-sm">
           <div class="card-header py-3">
@@ -51,14 +126,60 @@
           <div class="card-body">
             <ul class="list-unstyled mt-3 mb-4">
               <li>Posti: {{sala.posti}}</li>
-              <li>Tecnologia IMAX:{{sala.tecnologiaIMAX? "Si":"No"}}</li>
+              <li>Tecnologia IMAX:{{sala.tecnologiaIMAX? " Si":" No"}}</li>
             </ul>
-            <button type="button" class="w-100 btn p-1 m-1 btn-lg btn-outline-primary">Vedi film in programmazione</button>
-            <button type="button" class="w-100 btn p-1 m-1 btn-lg btn-outline-success">Aggiungi film in programmazione</button>
+            <button type="button" class="w-100 btn p-1 m-1 btn-lg btn-outline-primary" (click)="getProiezioniFutureBySala(sala)">Vedi film in programmazione</button>
+            <button type="button" class="w-100 btn p-1 m-1 btn-lg btn-outline-success"(click)="seeFilmToAdd(sala)">Aggiungi film in programmazione</button>
+
           </div>
         </div>
       </div>
     </div>
+
+      <!-- TABLE PROIEZIONI -->
+
+    <table *ngIf="visibleProiezioni" class="table">
+      <thead>
+        <tr>
+          <th scope="col">Film</th>
+          <th scope="col">Inizio</th>
+          <th scope="col">Fine</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let proiezione of proiezioniFuture">
+          <th scope="row">{{proiezione.nome}}</th>
+          <td>{{proiezione.dataProiezione}}</td>
+          <td>{{proiezione.dataFineProiezione}}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- TABLE FILM DA AGGIUNGERE IN PROIEZIONIE -->
+
+    <table *ngIf="visibleAddFilm" class="table">
+      <thead>
+        <tr>
+          <th scope="col">Film</th>
+          <th scope="col">Regista</th>
+          <th scope="col">Anno</th>
+          <th scope="col">Data</th>
+          <th scope="col">Conferma</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let film of cinemaAttuale.catalogoFilm">
+          <th scope="row">{{film.nome}}</th>
+          <th scope="row">{{film.regista}}</th>
+          <th scope="row">{{film.anno}}</th>
+          <td>
+            <input #inputData [(ngModel)]="dataProiezione" hidden type="datetime-local">
+            <button #chooseBtn type="button" class="btn btn-outline-success text-end" (click)="inputData.removeAttribute('hidden'); chooseBtn.setAttribute('hidden','')" >Scegli una data!</button>
+          </td>
+          <td><button [disabled]="!dataProiezione"  type="button" class="btn btn-success text-end" (click)="newProiezioneInSala(film)" >&#x2713;</button></td>
+        </tr>
+      </tbody>
+    </table>
 
 
 

@@ -94,7 +94,7 @@ public class ProiezioneController {
 
     private LocalDateTime stringToDate(String data){
         //metodo per convertire string in LocalDateTime
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
         return LocalDateTime.parse(data, formatter);
     }
 

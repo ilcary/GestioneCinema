@@ -62,9 +62,11 @@ public class FilmController {
     }
 
     @DeleteMapping("{id}")
-    public String deleteFilmById(@PathVariable("id") Long id) {
+    public Film deleteFilmById(@PathVariable("id") Long id) {
+        Film film = filmService.getById(id);
+        logger.info("Film deleted successfully");
         filmService.deleteById(id);
-        return "Film deleted successfully";
+        return film;
     }
 
     @PutMapping("{id}")

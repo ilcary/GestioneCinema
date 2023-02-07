@@ -20,7 +20,7 @@ export class ProiezioneService {
   }
 
   saveProiezione(filmId:number, salaId:number, data:string):Observable<Proiezione>{
-    return this.http.post<Proiezione>(apiUrl+"/proiezioni?filmId="+filmId+"&salaId="+salaId+"&data"+data, {})
+    return this.http.post<Proiezione>(apiUrl+"/proiezioni?filmId="+filmId+"&salaId="+salaId+"&data="+data, {})
   }
 
   updateProiezione(proiezione:Proiezione):Observable<Proiezione>{

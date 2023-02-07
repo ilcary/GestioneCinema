@@ -1,10 +1,15 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Cinema } from './models/Cinema';
+import { Film } from './models/Film';
 import { Proiezione } from './models/Proiezione';
 import { Sala } from './models/Sala';
 import { CinemaService } from './service/cinema.service';
+import { ProiezioneService } from './service/proiezione.service';
 import { SalaService } from './service/sala.service';
+import Swal from 'sweetalert2';
+import { FilmService } from './service/film.service';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
@@ -13,17 +18,40 @@ import { SalaService } from './service/sala.service';
 })
 export class AppComponent implements OnInit {
 
+  dataProiezione!: string;
+  cinemaAttuale!: Cinema;
+  salaAttuale!: Sala;
   visibleCinemas: boolean = true;
+  visibleCatalogoFilm: boolean = false;
+  visibleProiezioniCinema: boolean = false;
+  visibleSalas: boolean = false;
+  visibleProiezioni: boolean = false;
+  visibleAddFilm: boolean = false;
   cinemaList: Cinema[] = [];
   salaList: Sala[] = [];
   proiezioniFuture: Proiezione[] = [];
-  nomeCinema:string="";
+  proiezioni: Proiezione[] = [];
+  nomeCinema: string = "";
+  form!: FormGroup;
 
-  constructor(private cinemaService: CinemaService, private salaService: SalaService) { }
+  constructor(
+    private cinemaService: CinemaService,
+    private salaService: SalaService,
+    private proiezioneService: ProiezioneService,
+    private filmService: FilmService
+    ) { }
 
   ngOnInit(): void {
     this.getCinemas();
+    this.form = new FormGroup({
+      nome: new FormControl(null,[Validators.required]),
+      regista: new FormControl(null,[Validators.required]),
+      anno: new FormControl(null,[Validators.required]),
+      durata: new FormControl(null,[Validators.required])
+  })
   }
+
+  //HOME CARD CINEMA
 
   getCinemas(): void {
     this.cinemaService.getAllCinema()
@@ -31,6 +59,7 @@ export class AppComponent implements OnInit {
         next: (res) => {
           console.log(res);
           this.cinemaList = res;
+
         },
         error: (error: HttpErrorResponse) => {
           console.log(error);
@@ -54,9 +83,19 @@ export class AppComponent implements OnInit {
       })
   }
 
+  getProiezioniFutureBySala(sala: Sala): void {
+    this.visibleSalas = !this.visibleSalas;
+    this.visibleProiezioni = !this.visibleProiezioni;
+    //senza fare altre chiamate al be sfruttiamo gli oggetti che già abbiamo già
+    this.proiezioniFuture = sala.inProgrammazione;
+  }
+
   seeSaleOfCinema(cinema: Cinema): void {
+    //ci salviamo il cinema in questione così da poter utilizzare il catalogo in altre funzioni
+    this.cinemaAttuale = cinema;
     this.visibleCinemas = !this.visibleCinemas;
-    this.nomeCinema=cinema.name;
+    this.visibleSalas = !this.visibleSalas;
+    this.nomeCinema = cinema.name;
     if (cinema.id) {
       this.salaService.getallSalaByCinemaId(cinema.id)
         .subscribe({
@@ -73,8 +112,203 @@ export class AppComponent implements OnInit {
     }
   }
 
-  setHome():void{
-    this.visibleCinemas=true;
+  seeFilmToAdd(sala: Sala): void {
+    this.salaAttuale = sala;
+    this.visibleAddFilm = !this.visibleAddFilm;
+    this.visibleSalas = !this.visibleSalas;
+  }
+
+  newProiezioneInSala(film: Film): void {
+    console.log(this.dataProiezione);
+
+    if (film.id && this.salaAttuale.id) {
+      this.proiezioneService.saveProiezione(film.id, this.salaAttuale.id, this.dataProiezione)
+        .subscribe({
+          next: (res) => {
+            console.log(res);
+            this.salaAttuale.inProgrammazione.push(res);
+            Swal.fire(
+              'Film aggiunto in programmazione!',
+              'Il film: "' + res.nome + '" sarà proiettato il: ' + res.dataProiezione,
+              'success'
+            )
+            this.setSaleFromProgrammazione();//toriniamo alle sale dopo aver aggiunto il film in programmazione :)
+          },
+          error: (error: HttpErrorResponse) => {
+            console.log(error);
+          }
+        })
+
+    } else {
+      if (film.id)
+        console.log("L'id del film è undefined");
+      if (this.salaAttuale.id)
+        console.log("L'id della sala attuale è undefined");
+    }
+  }
+
+  //CATALOGO CINEMA
+
+  seeCatalogoFilm(cinema: Cinema) {
+    this.cinemaAttuale = cinema;
+    this.nomeCinema = cinema.name;
+    this.visibleCinemas = !this.visibleCinemas;
+    this.visibleCatalogoFilm = !this.visibleCatalogoFilm;
+
+  }
+
+  deleteFilmFromCatalogo(film:Film):void{
+    if (film.id){
+      this.filmService.deleteFilmById(film.id)
+      .subscribe({
+        next: (res) => {
+          console.log(res);
+          this.cinemaAttuale.catalogoFilm.splice(this.cinemaAttuale.catalogoFilm.indexOf(res),1);
+          Swal.fire(
+            'Film rimosso dal catalogo :(',
+            'Il film: "' + res.nome + '" è stato correttamente eliminato',
+            'success'
+          )
+        },
+        error: (error: HttpErrorResponse) => {
+          console.log(error);
+        }
+      })
+    }else{
+      console.log("L'id del film è undefined");
+
+    }
+
+  }
+
+  addFilmToCatalogo():void{
+    if(this.cinemaAttuale.id){
+      this.filmService.saveFilm(this.form.value.nome, this.form.value.regista, this.form.value.anno, this.cinemaAttuale.id, this.form.value.durata)
+      .subscribe({
+        next: (res) => {
+          console.log(res);
+          this.cinemaAttuale.catalogoFilm.push(res);
+          Swal.fire(
+            'Film aggiunto al catalogo!',
+            'Il film: "' + res.nome + '" è stato correttamente aggiunto al catalogo del cinema: ' + this.cinemaAttuale.name,
+            'success'
+          )
+          this.form.reset();
+        },
+        error: (error: HttpErrorResponse) => {
+          console.log(error);
+        }
+      })
+    }else{
+      console.log("L'id del cinema è undefined");
+
+    }
+
+  }
+
+  //PROIEZIONI COMPLESSIVE DEL CINEMA
+
+  seeProiezioniCinema(cinema: Cinema) {
+    this.cinemaAttuale = cinema;
+    this.nomeCinema = cinema.name;
+    this.visibleCinemas = !this.visibleCinemas;
+    this.visibleProiezioniCinema = !this.visibleProiezioniCinema;
+    if(cinema.id){
+
+      this.cinemaService.getFutureProiezioni(cinema.id)
+      .subscribe({
+        next: (res) => {
+          console.log(res);
+          this.proiezioni=res;
+        },
+        error: (error: HttpErrorResponse) => {
+          console.log(error);
+        }
+      })
+    }else{
+      console.log("");
+
+    }
+
+  }
+
+  getProiezioniPassate(cinema: Cinema):void{
+    if(cinema.id){
+    this.cinemaService.getFutureProiezioni(cinema.id)
+    .subscribe({
+      next: (res) => {
+        console.log(res);
+        this.proiezioni=res;
+      },
+      error: (error: HttpErrorResponse) => {
+        console.log(error);
+      }
+    })
+  }else{
+    console.log("");
+
+  }
+  }
+
+  getProiezioniByDataInizio(cinema: Cinema,dataInizio:string):void{
+    if(cinema.id){
+      this.cinemaService.getProiezioniByDataInizio(cinema.id,dataInizio)
+      .subscribe({
+        next: (res) => {
+          console.log(res);
+          this.proiezioni=res;
+        },
+        error: (error: HttpErrorResponse) => {
+          console.log(error);
+        }
+      })
+    }else{
+      console.log("");
+
+    }
+  }
+
+  getProiezioniByDataFine(cinema: Cinema, dataFine:string):void{
+    if(cinema.id){
+      this.cinemaService.getProiezioniByDataFine(cinema.id,dataFine)
+      .subscribe({
+        next: (res) => {
+          console.log(res);
+          this.proiezioni=res;
+        },
+        error: (error: HttpErrorResponse) => {
+          console.log(error);
+        }
+      })
+    }else{
+      console.log("");
+
+    }
+  }
+
+  //LOGICA VISIBILITY
+
+  //reset delle visibility per la home
+  setHome(): void {
+    this.visibleCinemas = true;
+    this.visibleSalas = false;
+    this.visibleCatalogoFilm = false;
+    this.visibleProiezioniCinema = false;
+    this.visibleSalas = false;
+    this.visibleProiezioni = false;
+    this.visibleAddFilm = false;
+  }
+
+  //visibility dalle proiezioni alle sale
+  setProiezioni(): void {
+    this.visibleProiezioni = false;
+    this.visibleSalas = true;
+  }
+
+  //visibility dalle
+  setSaleFromProgrammazione(): void {
+    this.visibleAddFilm = false;
+    this.visibleSalas = true;
   }
 
 

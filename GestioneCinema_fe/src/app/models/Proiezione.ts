@@ -1,3 +1,5 @@
+import { Sala } from "./Sala";
+
 export interface Proiezione{
   id?:number;
   nome:string;
@@ -6,5 +8,5 @@ export interface Proiezione{
   minDurata:number;
   dataProiezione:string;
   dataFineProiezione:string;
-
+  salaNum:number;
 }
