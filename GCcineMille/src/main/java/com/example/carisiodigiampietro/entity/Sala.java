@@ -35,7 +35,7 @@ public class Sala {
     @JsonBackReference
     private Cinema cinema;
 
-    @OneToMany(mappedBy = "sala")
+    @OneToMany(mappedBy = "sala",fetch = FetchType.EAGER)
     @JsonManagedReference
     private List<Proiezione> inProgrammazione;
 

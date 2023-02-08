@@ -130,10 +130,11 @@ public class CinemaController {
 
 
     @DeleteMapping("{id}")
-    public String deleteCinemaById(@PathVariable("id") Long id) {
-        String nomeCinema = cinemaService.getById(id).getName();
+    public Cinema deleteCinemaById(@PathVariable("id") Long id) {
+        Cinema cinema = cinemaService.getById(id);
         cinemaService.deleteById(id);
-        return "Cinema "+ nomeCinema +" deleted successfully";
+        logger.info("Cinema "+ cinema.getName() +" deleted successfully");
+        return cinema;
     }
 
     @PutMapping("{id}")

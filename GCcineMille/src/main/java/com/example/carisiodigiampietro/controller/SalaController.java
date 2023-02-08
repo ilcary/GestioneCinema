@@ -65,14 +65,15 @@ public class SalaController {
     }
 
     @DeleteMapping("{id}")
-    public String deleteSalaById(@PathVariable("id") Long id) {
+    public Sala deleteSalaById(@PathVariable("id") Long id) {
         //mi prendo la sala da eliminare
         Sala sala = salaService.getById(id);
         //la elimino dalla lista sale del cinema appartenente
         cinemaService.getById(sala.getCinema().getId()).removeSalaFromCinema(sala);
         //elimino definitivamente la sala
         salaService.deleteById(id);
-        return "Sala deleted successfully";
+        logger.info("Sala deleted successfully");
+        return sala;
     }
 
     @PutMapping("{id}")

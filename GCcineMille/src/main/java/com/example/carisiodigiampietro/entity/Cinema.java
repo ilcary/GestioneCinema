@@ -24,7 +24,7 @@ public class Cinema {
     @OneToMany(mappedBy = "cinema",cascade = CascadeType.ALL)
     @JsonManagedReference
     private Set<Sala> sale;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<Film> catalogoFilm;
 
     public void addSalaToCinema(Sala s){

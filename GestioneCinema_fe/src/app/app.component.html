@@ -11,11 +11,10 @@
         <li><a href="#" disabled class="nav-link px-2 text-white disabled">Gestione Cinema 🍿</a></li>
         <li><a href="#" class="nav-link px-2 text-white" (click)="setHome()">Home</a></li>
       </ul>
-       <!-- bottone per aumentare la ux che ci da la possibilità di tornare indietro di uno step e non solo alla home con il navlink -->
+       <!-- bottoni per aumentare la ux che ci da la possibilità di tornare indietro di uno step e non solo alla home con il navlink -->
       <button *ngIf="visibleProiezioni" type="button" class="btn btn-danger text-end" (click)="setProiezioni()">&#x2BC7;</button>
       <button *ngIf="visibleAddFilm" type="button" class="btn btn-danger text-end" (click)="setSaleFromProgrammazione()">&#x2BC7;</button>
-      <button *ngIf="visibleCatalogoFilm" type="button" class="btn btn-danger text-end" (click)="setHome()">&#x2BC7;</button>
-
+      <button *ngIf="visibleCatalogoFilm || visibleProiezioniCinema || visibleSalas" type="button" class="btn btn-danger text-end" (click)="setHome()">&#x2BC7;</button>
     </div>
   </div>
 </header>
@@ -30,7 +29,7 @@
       <h1 class="display-4 fw-normal">{{visibleCinemas? "Gestione Cinema 🍿":nomeCinema}}</h1>
 
       <p class="fs-5 text-muted"><!-- ternary operator annidati, ci risparmiamo una funzione ed in base ai livelli di visibility scegliamo la descrizione adatta -->
-        {{visibleCinemas? "Scegli uno tra i seguenti cinema!" : visibleProiezioni ? "Quale film vedrai?": visibleAddFilm? "Scegli un film da aggiungiere alla programmazione della sala n. "+salaAttuale.id+" 🎥" : "Scegli una tra le seguenti sale!"}}
+        {{visibleProiezioniCinema? "Tutte le proiezioni delle sale del cinema!" : visibleCatalogoFilm? "Tutti i film disponibili nel cinema!" :visibleCinemas? "Scegli uno tra i seguenti cinema!" : visibleProiezioni ? "Quale film vedrai?": visibleAddFilm? "Scegli un film da aggiungiere alla programmazione della sala n. "+salaAttuale.id+" 🎥" : "Scegli una tra le seguenti sale!"}}
       </p>
     </div>
 
@@ -40,11 +39,11 @@
       <div *ngFor="let cinema of cinemaList" class="col">
         <div class="card mb-4 rounded-3 text-dark shadow-sm">
           <div class="card-header py-3">
-            <h4 class="my-0 fw-normal">{{cinema.name}}</h4>
+            <span class="my-0 fw-normal fs-4">{{cinema.name}}</span><span class="float-end"><button type="button" class="btn btn-outline-danger px-2 p-1 text-end" (click)="deleteCinema(cinema)" >X</button></span>
           </div>
           <div class="card-body">
             <ul class="list-unstyled mt-3 mb-4">
-              <li>Sale: {{cinema.sale.length}}</li>
+              <li>{{cinema.sale&& cinema.sale.length!=0?"Sale: "+cinema.sale.length: "Non ci sono ancora sale ma ci stiamo lavorando 🚧"}}</li>
             </ul>
             <button type="button" class="w-100 p-1 m-1 btn btn-lg btn-outline-primary" (click)="seeCatalogoFilm(cinema)">Catalogo Film 🎞️</button>
             <button type="button" class="w-100 p-1 m-1 btn btn-lg btn-outline-secondary" (click)="seeProiezioniCinema(cinema)">Proiezioni 🎥</button>
@@ -52,6 +51,26 @@
           </div>
         </div>
       </div>
+
+      <div class="col">
+        <div class="card mb-4 rounded-3 text-dark shadow-sm">
+          <div class="card-header py-3">
+            <p class="my-0 fw-normal fs-4">Crea un nuovo Cinema</p>
+          </div>
+          <div class="card-body">
+            <ul class="list-unstyled mt-3 mb-4">
+              <li>Compila il form per creare un nuovo cinema!</li>
+              <li>
+                <div class="d-flex flex-row">
+                  <p class="p-1 m-1 fw-bolder">Nome cinema:</p> <input id="basic-url"  [(ngModel)]="nomeNuovoCinema" type="text" class="form-control p-1 m-1" aria-label="Posti">
+                </div>
+              </li>
+            </ul>
+            <button type="button" class="w-100 p-1 m-1 btn btn-lg btn-outline-success" [disabled]="!nomeNuovoCinema" (click)="saveNuovoCinema()">Costruisci!</button>
+          </div>
+        </div>
+      </div>
+
     </div>
 
       <!-- TABLE FILM CRUD CATALOGO -->
@@ -74,12 +93,12 @@
             <td scope="row">{{film.minDurata}} min</td>
             <td scope="row"><button type="button" class="btn btn-outline-danger p-1 text-end" (click)="deleteFilmFromCatalogo(film)" >Elimina</button></td>
           </tr>
-          <tr  [formGroup]="form">
+          <tr  [formGroup]="formFilm">
             <th scope="row"><input formControlName="nome" type="text" class="form-control" placeholder="Nome" aria-label="Nome"></th>
             <td scope="row"><input formControlName="regista" type="text" class="form-control" placeholder="Regista" aria-label="Regista"></td>
             <td scope="row"><input formControlName="anno" type="number" class="form-control" placeholder="Anno" aria-label="Anno"></td>
             <td scope="row"><input formControlName="durata" type="number" class="form-control" placeholder="Durata" aria-label="Durata in min"></td>
-            <td scope="row"><button type="button" class="btn btn-outline-success p-1 text-end" [disabled]="!form.valid" (click)="addFilmToCatalogo()" >Aggiungi</button></td>
+            <td scope="row"><button type="button" class="btn btn-outline-success p-1 text-end" [disabled]="!formFilm.valid" (click)="addFilmToCatalogo()" >Aggiungi</button></td>
           </tr>
 
         </tbody>
@@ -89,7 +108,7 @@
 
        <div *ngIf="visibleProiezioniCinema" >
         <p class="fs-6 text-center text-muted">
-          Lista proiezioni future e passate, se vuoi ricercare tramite data inseriscila nell'input unico e poi premi il bottone che desideri
+          Tip: se si desidera ricercare una proiezione tramite data di inizio/fine compliare l'input e scegliere il criterio di ricerca 🎯
         </p>
         <div class="d-flex justify-content-center">
           <button type="button" class="btn btn-outline-success p-1 m-1 text-end"  (click)="getFutureProiezioni(cinemaAttuale)" >Proiezioni future</button>
@@ -124,17 +143,23 @@
         </tbody>
       </table>
       <div class="d-flex justify-content-center" *ngIf="proiezioni.length==0">
-        <img src="../assets/FilmNotFound.jpg.png" alt="">
+        <img src="../assets/FilmNotFound.jpg.png" alt=""> <!-- :) -->
       </div>
        </div>
 
       <!-- SALA CARDS -->
 
-    <div *ngIf="visibleSalas" class="row row-cols-1 row-cols-md-3 mb-3 text-center">
+      <div *ngIf="visibleSalas" >
+
+  <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
       <div *ngFor="let sala of salaList" class="col">
         <div class="card mb-4 rounded-3 text-dark shadow-sm">
           <div class="card-header py-3">
-            <h4 class="my-0 fw-normal">Sala n. {{sala.id}}</h4>
+            <!-- metodo pulito per denominare le sale partendo da 1 senza usare gli id
+              ma sfruttando la loro posizione nell'array la quale sì puo cambiare se viene
+              eliminata una sala ma di conseguenza verrà anche eliminata nel cinema -->
+            <span class="my-0 fw-normal fs-4">Sala n. {{salaList.indexOf(sala)+1}}</span>
+            <span class="float-end"><button type="button" class="btn btn-outline-danger px-2 p-1 text-end" (click)="deleteSala(sala)" >X</button></span>
           </div>
           <div class="card-body">
             <ul class="list-unstyled mt-3 mb-4">
@@ -143,11 +168,42 @@
             </ul>
             <button type="button" class="w-100 btn p-1 m-1 btn-lg btn-outline-primary" (click)="getProiezioniFutureBySala(sala)">Vedi film in programmazione</button>
             <button type="button" class="w-100 btn p-1 m-1 btn-lg btn-outline-success"(click)="seeFilmToAdd(sala)">Aggiungi film in programmazione</button>
+          </div>
+        </div>
+      </div>
 
+<!-- CARD PER LA CREAZIONE DI UNA NUOVA SALA -->
+
+      <div class="col">
+        <div class="card mb-4 rounded-3 text-dark shadow-sm">
+          <div class="card-header py-3">
+            <h4 class="my-0 fw-normal">Crea una nuova sala!</h4>
+          </div>
+          <div [formGroup]="formSala" class="card-body">
+            <ul class="list-unstyled mt-3 mb-4">
+              <li>Compila il seguente form per creare una nuova sala</li>
+              <li>
+                <div class="d-flex flex-row">
+                  <p class="p-1 m-1 fw-bolder">Posti:</p> <input formControlName="posti" type="number" class="form-control p-1 m-1" aria-label="Posti">
+                </div>
+              </li>
+              <li>
+                <div class="d-flex flex-row">
+                  <p class="p-1 m-1 fw-bolder">IMAX:</p>
+                <select formControlName="tecnologiaIMAX" class="form-select p-1 m-1" placeholder="Tecnologia IMAX" aria-label="tecnologiaIMAX">
+                <option value=true>Si</option>
+                <option value=false>No</option>
+              </select>
+            </div>
+            </li>
+            </ul>
+            <button type="button" [disabled]="!formSala.valid" class="w-100 btn p-1 m-1 btn-lg btn-outline-success"(click)="addSalaToCinema()">Aggiungi sala al cinema!</button>
           </div>
         </div>
       </div>
     </div>
+
+      </div>
 
       <!-- TABLE PROIEZIONI -->
 

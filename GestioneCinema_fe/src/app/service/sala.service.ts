@@ -24,7 +24,7 @@ export class SalaService {
   }
 
   saveSala(posti:number, tecnologiaIMAX:boolean, cinemaId:number):Observable<Sala>{
-    return this.http.post<Sala>(apiUrl+"/sala?tecnologiaIMAX="+tecnologiaIMAX+"&posti="+posti+"&cinemaId"+cinemaId, {})
+    return this.http.post<Sala>(apiUrl+"/sala?tecnologiaIMAX="+tecnologiaIMAX+"&posti="+posti+"&cinemaId="+cinemaId, {})
   }
 
   updateSala(sala:Sala):Observable<Sala>{

@@ -36,8 +36,8 @@ export class CinemaService {
     return this.http.get<Proiezione[]>(apiUrl+"/cinema/byDataFine/"+idCinema+"?dataFine="+dataFine)
   }
 
-  saveCinema(cinema:Cinema):Observable<Cinema>{
-    return this.http.post<Cinema>(apiUrl+"/cinema",cinema)
+  saveCinema(cinemaName:string):Observable<Cinema>{
+    return this.http.post<Cinema>(apiUrl+"/cinema?name="+cinemaName,{})
   }
 
   updateCinema(cinema:Cinema):Observable<Cinema>{

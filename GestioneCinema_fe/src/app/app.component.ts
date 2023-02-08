@@ -20,6 +20,7 @@ export class AppComponent implements OnInit {
 
   dataProiezione!: string;
   dataInizioFine!: string;
+  nomeNuovoCinema!: string;
   cinemaAttuale!: Cinema;
   salaAttuale!: Sala;
   visibleCinemas: boolean = true;
@@ -33,7 +34,8 @@ export class AppComponent implements OnInit {
   proiezioniFuture: Proiezione[] = [];
   proiezioni: Proiezione[] = [];
   nomeCinema: string = "";
-  form!: FormGroup;
+  formFilm!: FormGroup;
+  formSala!: FormGroup;
 
   constructor(
     private cinemaService: CinemaService,
@@ -44,11 +46,16 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.getCinemas();
-    this.form = new FormGroup({
+    this.formFilm = new FormGroup({
       nome: new FormControl(null, [Validators.required]),
       regista: new FormControl(null, [Validators.required]),
       anno: new FormControl(null, [Validators.required]),
       durata: new FormControl(null, [Validators.required])
+    })
+
+    this.formSala = new FormGroup({
+      posti: new FormControl(null, [Validators.required]),
+      tecnologiaIMAX: new FormControl(null, [Validators.required])
     })
   }
 
@@ -60,7 +67,6 @@ export class AppComponent implements OnInit {
         next: (res) => {
           console.log(res);
           this.cinemaList = res;
-
         },
         error: (error: HttpErrorResponse) => {
           console.log(error);
@@ -68,6 +74,61 @@ export class AppComponent implements OnInit {
         }
       })
 
+  }
+
+  saveNuovoCinema():void{
+    this.cinemaService.saveCinema(this.nomeNuovoCinema)
+    .subscribe({
+      next: (res) => {
+        console.log(res);
+        this.cinemaList.push(res);
+        Swal.fire(
+          'Nuovo Cinema creato!',
+          'Il cinema "' + res.name + ' è stato creato correttamente :)',
+          'success'
+        )
+        this.nomeNuovoCinema="";
+      },
+      error: (error: HttpErrorResponse) => {
+        console.log(error);
+
+      }
+    })
+  }
+
+  deleteCinema(cinema:Cinema):void{
+    Swal.fire({
+      title: 'Sei sicuro di voler eliminare il cinema '+cinema.name+' ?',
+      text: "Perderai tutte le sale e le proiezioni inerenti al cinema!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Si, sono sicuro!'
+    }).then((result) => {
+      if (result.isConfirmed&&cinema.id) {
+        this.cinemaService.deleteCinemaById(cinema.id)
+        .subscribe({
+          next: (res) => {
+            console.log(res);
+            this.cinemaList.splice(this.cinemaList.indexOf(res),1)
+            Swal.fire(
+              'Eliminato!',
+              'Il cinema "'+cinema.name+'" è stato eliminato correttamente',
+              'success'
+            )
+          },
+          error: (error: HttpErrorResponse) => {
+            console.log(error);
+
+          }
+        })
+
+      }else if (!cinema.id) {
+        console.log("L'id del cinema è undefined");
+
+      }
+    })
   }
 
   getProiezioniFuture(cinemaId: number): void {
@@ -84,12 +145,7 @@ export class AppComponent implements OnInit {
       })
   }
 
-  getProiezioniFutureBySala(sala: Sala): void {
-    this.visibleSalas = !this.visibleSalas;
-    this.visibleProiezioni = !this.visibleProiezioni;
-    //senza fare altre chiamate al be sfruttiamo gli oggetti che già abbiamo già
-    this.proiezioniFuture = sala.inProgrammazione;
-  }
+  //SALE CINEMA
 
   seeSaleOfCinema(cinema: Cinema): void {
     //ci salviamo il cinema in questione così da poter utilizzare il catalogo in altre funzioni
@@ -111,6 +167,81 @@ export class AppComponent implements OnInit {
     } else {
       console.log("CinemaId is undefined");
     }
+  }
+
+  addSalaToCinema():void{
+    console.log(this.formSala.value.tecnologiaIMAX);
+
+    if (this.cinemaAttuale.id) {
+      this.salaService.saveSala(this.formSala.value.posti,this.formSala.value.tecnologiaIMAX, this.cinemaAttuale.id)
+        .subscribe({
+          next: (res) => {
+            console.log(res);
+            //controlliamo che l'array di sale non sia null cosi da poter aggiungere la sala appena creata
+            if(this.salaList){
+              this.salaList.push(res);
+            }else{//se null lo settiamo vuoto e gli metteremo la sua prima sala
+              this.salaList= [];
+              this.salaList.push(res);
+            }
+            Swal.fire(
+              'Sala aggiunta al cinema!',
+              'La sala n. ' + (this.salaList.indexOf(res)+1) + ' è stata aggiunta correttamente :)',
+              'success'
+            )
+            this.formSala.reset();
+          },
+          error: (error: HttpErrorResponse) => {
+            console.log(error);
+          }
+        })
+    } else {
+      console.log("CinemaId is undefined");
+    }
+  }
+
+  deleteSala(sala:Sala):void {
+    Swal.fire({
+      title: 'Sei sicuro di voler eliminare questa sala?',
+      text: "Quest'azione non è reversibile!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Si, voglio eliminarla!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        if(sala.id){
+          this.salaService.deleteSalaById(sala.id)
+          .subscribe({
+            next: (res) => {
+              console.log(res);
+              this.salaList.splice(this.salaList.indexOf(res),1)
+              Swal.fire(
+                'Sala eliminata dal cinema!',
+                'La sala è stata eliminata correttamente :(',
+                'success'
+              )
+            },
+            error: (error: HttpErrorResponse) => {
+              console.log(error);
+
+            }
+          })
+        }else{
+          console.log("L'id della Sala è undefined");
+
+        }
+      }
+    })
+
+  }
+
+  getProiezioniFutureBySala(sala: Sala): void {
+    this.visibleSalas = !this.visibleSalas;
+    this.visibleProiezioni = !this.visibleProiezioni;
+    //senza fare altre chiamate al be sfruttiamo gli oggetti che abbiamo già
+    this.proiezioniFuture = sala.inProgrammazione;
   }
 
   seeFilmToAdd(sala: Sala): void {
@@ -184,7 +315,7 @@ export class AppComponent implements OnInit {
 
   addFilmToCatalogo(): void {
     if (this.cinemaAttuale.id) {
-      this.filmService.saveFilm(this.form.value.nome, this.form.value.regista, this.form.value.anno, this.cinemaAttuale.id, this.form.value.durata)
+      this.filmService.saveFilm(this.formFilm.value.nome, this.formFilm.value.regista, this.formFilm.value.anno, this.cinemaAttuale.id, this.formFilm.value.durata)
         .subscribe({
           next: (res) => {
             console.log(res);
@@ -194,7 +325,7 @@ export class AppComponent implements OnInit {
               'Il film: "' + res.nome + '" è stato correttamente aggiunto al catalogo del cinema: ' + this.cinemaAttuale.name,
               'success'
             )
-            this.form.reset();
+            this.formFilm.reset();
           },
           error: (error: HttpErrorResponse) => {
             console.log(error);
@@ -239,7 +370,7 @@ export class AppComponent implements OnInit {
 
   getProiezioniPassate(cinema: Cinema): void {
     if (cinema.id) {
-      this.cinemaService.getFutureProiezioni(cinema.id)
+      this.cinemaService.getStoricoProiezioni(cinema.id)
         .subscribe({
           next: (res) => {
             console.log(res);
