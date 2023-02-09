@@ -128,6 +128,29 @@ public class CinemaController {
         return proiezioniPassate;
     }
 
+    @GetMapping("/byRange/{id}")
+    public List<Proiezione> getProiezioniInRange(
+            @PathVariable("id") Long id,
+            @RequestParam("dataFrom") String dataFrom,
+            @RequestParam("dataTo") String dataTo
+    ){
+        Cinema cinema = cinemaService.getById(id);
+        List<Proiezione> proiezioniInRange = new ArrayList<Proiezione>();
+        Set<Sala> saleCinema = cinema.getSale();
+
+        for(Sala s : saleCinema){
+            List<Proiezione> listP = s.getInProgrammazione();
+
+            for (Proiezione proiezione : listP){
+                if(proiezione.getDataProiezione().isAfter(stringToDate(dataFrom)) && proiezione.getDataProiezione().isBefore(stringToDate(dataTo)))
+                    proiezioniInRange.add(proiezione);
+            }
+
+        }
+
+        return proiezioniInRange;
+    }
+
 
     @DeleteMapping("{id}")
     public Cinema deleteCinemaById(@PathVariable("id") Long id) {

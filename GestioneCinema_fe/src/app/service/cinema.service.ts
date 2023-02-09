@@ -36,6 +36,10 @@ export class CinemaService {
     return this.http.get<Proiezione[]>(apiUrl+"/cinema/byDataFine/"+idCinema+"?dataFine="+dataFine)
   }
 
+  getProiezioniInRange(idCinema: number, dataFrom:string, dataTo:string):Observable<Proiezione[]>{
+    return this.http.get<Proiezione[]>(apiUrl+"/cinema/byRange/"+idCinema+"?dataFrom="+dataFrom+"&dataTo="+dataTo)
+  }
+
   saveCinema(cinemaName:string):Observable<Cinema>{
     return this.http.post<Cinema>(apiUrl+"/cinema?name="+cinemaName,{})
   }

@@ -18,6 +18,8 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 })
 export class AppComponent implements OnInit {
 
+  dataFrom!: string;
+  dataTo!: string;
   dataProiezione!: string;
   dataInizioFine!: string;
   nomeNuovoCinema!: string;
@@ -177,6 +179,8 @@ export class AppComponent implements OnInit {
         .subscribe({
           next: (res) => {
             console.log(res);
+            //se l'utente torna indietro trovera i dati sul cinema aggiornati
+            this.getCinemas();
             //controlliamo che l'array di sale non sia null cosi da poter aggiungere la sala appena creata
             if(this.salaList){
               this.salaList.push(res);
@@ -199,6 +203,7 @@ export class AppComponent implements OnInit {
       console.log("CinemaId is undefined");
     }
   }
+
 
   deleteSala(sala:Sala):void {
     Swal.fire({
@@ -420,6 +425,26 @@ export class AppComponent implements OnInit {
       console.log("L'id del cinema è undefined");
 
     }
+  }
+
+  getProiezioniInRange(cinema: Cinema):void{
+    if (cinema.id) {
+      this.cinemaService.getProiezioniInRange(cinema.id, this.dataFrom, this.dataTo)
+        .subscribe({
+          next: (res) => {
+            console.log(res);
+            this.proiezioni = res;
+            this.dataFrom = "";
+            this.dataTo = "";
+          },
+          error: (error: HttpErrorResponse) => {
+            console.log(error);
+          }
+        })
+    } else {
+      console.log("L'id del cinema è undefined");
+    }
+
   }
 
   //LOGICA VISIBILITY

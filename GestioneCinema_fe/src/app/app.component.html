@@ -29,7 +29,7 @@
       <h1 class="display-4 fw-normal">{{visibleCinemas? "Gestione Cinema 🍿":nomeCinema}}</h1>
 
       <p class="fs-5 text-muted"><!-- ternary operator annidati, ci risparmiamo una funzione ed in base ai livelli di visibility scegliamo la descrizione adatta -->
-        {{visibleProiezioniCinema? "Tutte le proiezioni delle sale del cinema!" : visibleCatalogoFilm? "Tutti i film disponibili nel cinema!" :visibleCinemas? "Scegli uno tra i seguenti cinema!" : visibleProiezioni ? "Quale film vedrai?": visibleAddFilm? "Scegli un film da aggiungiere alla programmazione della sala n. "+salaAttuale.id+" 🎥" : "Scegli una tra le seguenti sale!"}}
+        {{visibleProiezioniCinema? "Tutte le proiezioni delle sale del cinema!" : visibleCatalogoFilm? "Tutti i film disponibili nel cinema!" :visibleCinemas? "Scegli uno tra i seguenti cinema!" : visibleProiezioni ? "Quale film vedrai?": visibleAddFilm? "Scegli un film da aggiungiere alla programmazione della sala n. "+(salaList.indexOf(salaAttuale)+1)+" 🎥" : "Scegli una tra le seguenti sale!"}}
       </p>
     </div>
 
@@ -106,16 +106,21 @@
 
        <!-- TABLE PROIEZIONI DEL CINEMA aggiungere metodi per il filtraggio delle proiezioni-->
 
-       <div *ngIf="visibleProiezioniCinema" >
+       <div *ngIf="visibleProiezioniCinema" class="d-flex justify-content-center flex-column align-items-center" >
         <p class="fs-6 text-center text-muted">
           Tip: se si desidera ricercare una proiezione tramite data di inizio/fine compliare l'input e scegliere il criterio di ricerca 🎯
         </p>
-        <div class="d-flex justify-content-center">
+        <div >
           <button type="button" class="btn btn-outline-success p-1 m-1 text-end"  (click)="getFutureProiezioni(cinemaAttuale)" >Proiezioni future</button>
           <button type="button" class="btn btn-outline-success p-1 m-1 text-end"  (click)="getProiezioniPassate(cinemaAttuale)" >Proiezioni passate</button>
           <button type="button" class="btn btn-outline-success p-1 m-1 text-end" [disabled]="!dataInizioFine" (click)="getProiezioniByDataInizio(cinemaAttuale,dataInizioFine)" >Proiezioni per data d'inizio</button>
           <button type="button" class="btn btn-outline-success p-1 m-1 text-end" [disabled]="!dataInizioFine" (click)="getProiezioniByDataFine(cinemaAttuale,dataInizioFine)" >Proiezioni per data di fine</button>
-          <input  [(ngModel)]="dataInizioFine" class="m-1" type="datetime-local">
+          <input  [(ngModel)]="dataInizioFine" class="m-1 p-1 rounded-1 border border-1 border-success" type="datetime-local">
+        </div>
+        <div class="input-group w-50">
+          <button class="input-group-text border-primary text-primary" [disabled]="!dataFrom || !dataTo" [ngClass]="!dataFrom || !dataTo? 'border-secondary text-secondary':'' " (click)="getProiezioniInRange(cinemaAttuale)">Cerca Da - A</button>
+          <input type="datetime-local" [(ngModel)]="dataFrom" aria-label="From" class="form-control border-primary">
+          <input type="datetime-local" [(ngModel)]="dataTo" aria-label="To" class="form-control border-primary">
         </div>
 
         <table class="table">
@@ -136,8 +141,8 @@
             <td scope="row">{{proiezione.regista}}</td>
             <td scope="row">{{proiezione.anno}}</td>
             <td scope="row">{{proiezione.minDurata}} min</td>
-            <td scope="row">{{proiezione.dataProiezione}}</td>
-            <td scope="row">{{proiezione.dataFineProiezione}}</td>
+            <td scope="row">{{proiezione.dataProiezione.replace("T"," ")}}</td>
+            <td scope="row">{{proiezione.dataFineProiezione.replace("T"," ")}}</td>
             <td scope="row">{{proiezione.salaNum}}</td>
           </tr>
         </tbody>
@@ -218,8 +223,8 @@
       <tbody>
         <tr *ngFor="let proiezione of proiezioniFuture">
           <th scope="row">{{proiezione.nome}}</th>
-          <td>{{proiezione.dataProiezione}}</td>
-          <td>{{proiezione.dataFineProiezione}}</td>
+          <td>{{proiezione.dataProiezione.replace("T"," ")}}</td>
+          <td>{{proiezione.dataFineProiezione.replace("T"," ")}}</td>
         </tr>
       </tbody>
     </table>
