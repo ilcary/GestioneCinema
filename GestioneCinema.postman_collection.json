@@ -1,0 +1,599 @@
+{
+	"info": {
+		"_postman_id": "a42a8ea5-5a6e-4e0f-933a-79eba511f384",
+		"name": "GestioneCinema",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "22584224"
+	},
+	"item": [
+		{
+			"name": "Cinema",
+			"item": [
+				{
+					"name": "get cinema by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/cinema/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"cinema",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get proiezioni future",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/cinema/inProgrammazione/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"cinema",
+								"inProgrammazione",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get proiezioni passate",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/cinema/storico/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"cinema",
+								"storico",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get proiezioni by data inizio",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/cinema/byDataInizio/1?dataInizio=2023-02-05T22:00",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"cinema",
+								"byDataInizio",
+								"1"
+							],
+							"query": [
+								{
+									"key": "dataInizio",
+									"value": "2023-02-05T22:00",
+									"description": "yyyy-MM-dd'T'HH:mm"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get proiezioni by data fine",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/cinema/byDataFine/1?dataFine=2023-02-06T00:45",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"cinema",
+								"byDataFine",
+								"1"
+							],
+							"query": [
+								{
+									"key": "dataFine",
+									"value": "2023-02-06T00:45",
+									"description": "yyyy-MM-dd'T'HH:mm"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get proiezioni by data fine Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/cinema/byDataFine/1?dataFine=2023-02-06T00:45:00",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"cinema",
+								"byDataFine",
+								"1"
+							],
+							"query": [
+								{
+									"key": "dataFine",
+									"value": "2023-02-06T00:45:00",
+									"description": "yyyy-MM-dd'T'HH:mm:ss"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "new cinema",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/cinema?name=CineMille",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"cinema"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "CineMille"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update cinema",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Cine Mille\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/cinema/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"cinema",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete cinema by id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/cinema/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"cinema",
+								"3"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Sala",
+			"item": [
+				{
+					"name": "get sala by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/sala/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"sala",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get list of sala by cinemaId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/sala/allSalaByCinemaId/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"sala",
+								"allSalaByCinemaId",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "new sala and set cinema that owns it",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/sala?tecnologiaIMAX=true&posti=50&cinemaId=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"sala"
+							],
+							"query": [
+								{
+									"key": "tecnologiaIMAX",
+									"value": "true"
+								},
+								{
+									"key": "posti",
+									"value": "50"
+								},
+								{
+									"key": "cinemaId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update sala",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tecnologiaIMAX\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/sala/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"sala",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete sala by id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/sala/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"sala",
+								"2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Film",
+			"item": [
+				{
+					"name": "get film by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/film/7",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"film",
+								"7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "new film",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/film?name=Bastardi senza gloria&regista=Quentin Tarantino&anno=2009&cinemaId=1&minDurata=165",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"film"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "Bastardi senza gloria"
+								},
+								{
+									"key": "regista",
+									"value": "Quentin Tarantino"
+								},
+								{
+									"key": "anno",
+									"value": "2009"
+								},
+								{
+									"key": "cinemaId",
+									"value": "1"
+								},
+								{
+									"key": "minDurata",
+									"value": "165"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update film",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"regista\": \"Quentin Ventino\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/film/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"film",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete film by id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/film/6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"film",
+								"6"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Proiezioni",
+			"item": [
+				{
+					"name": "get proiezione by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/proiezioni/8",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"proiezioni",
+								"8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "new proiezione in sala",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/proiezioni?filmId=7&salaId=1&data=2023-02-15T22:00",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"proiezioni"
+							],
+							"query": [
+								{
+									"key": "filmId",
+									"value": "7"
+								},
+								{
+									"key": "salaId",
+									"value": "1"
+								},
+								{
+									"key": "data",
+									"value": "2023-02-15T22:00",
+									"description": "yyyy-MM-dd'T'HH:mm"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update proiezione",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/proiezioni/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"proiezioni",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete proiezione by id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/proiezioni/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"proiezioni",
+								"3"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
